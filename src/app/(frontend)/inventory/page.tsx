@@ -12,7 +12,26 @@ import Link from 'next/link'
  * such as ?make=Toyota or ?minPrice=15000,
  * declare them here and use them in your query.
  */
-type SearchParams = { [key: string]: string | string[] | undefined }
+ type SearchParams = { [key: string]: string | string[] | undefined }
+
+ export default async function InventoryPage({
+   searchParams,
+ }: {
+   // 🔑 tell TS this is a Promise, not an object
+   searchParams: Promise<SearchParams>
+ }) {
+   // 🔑 unwrap it before use
+   const sp = await searchParams
+ 
+   const headers = await getHeaders()
+   const payloadConfig = await config
+   const payload = await getPayload({ config: payloadConfig })
+ 
+   // now use `sp` instead of `searchParams`
+   const where: any = {}
+   if (sp.make && typeof sp.make === 'string') {
+     where.make = { equals: sp.make }
+   }
 
 export default async function InventoryPage({ searchParams }: { searchParams?: SearchParams }) {
   const headers = await getHeaders()

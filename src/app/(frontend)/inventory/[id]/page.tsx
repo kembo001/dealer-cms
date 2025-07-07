@@ -69,17 +69,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /* ------------------------------------------------------------------ */
 /* 3️⃣  Page component                                                 */
 /* ------------------------------------------------------------------ */
-export default async function VehicleDetails({ params }: Props) {
+export default async function VehicleDetails({ params }: { params: Promise<{ id: string }> }) {
+  // unwrap the params promise
+  const { id } = await params
+
   const payload = await getPayload({ config })
-
-  const car = await payload
-    .findByID<CarDoc>({
-      collection: 'cars',
-      id: params.id,
-      depth: 2, // include upload relations
-    })
-    .catch(() => null)
-
+  const car = await payload.findByID<CarDoc>({ collection: 'cars', id, depth: 2 }).catch(() => null)
   if (!car) notFound()
 
   const heroImage = car.images?.[0]?.image?.url
