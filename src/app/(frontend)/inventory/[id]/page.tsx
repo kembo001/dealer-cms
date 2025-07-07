@@ -1,14 +1,17 @@
+// ───────────────────────────────────────────────────────────
+// src/app/(frontend)/inventory/[id]/page.tsx
+// ───────────────────────────────────────────────────────────
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { Metadata } from 'next'
+import type { Metadata, PageProps } from 'next'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import Link from 'next/link'
-import './details.css' // create as you like
+import './details.css'
 
-/** -----------------------------------------------------------------
- * 1️⃣  Types that mirror your collection definition
- * ---------------------------------------------------------------- */
+/* ------------------------------------------------------------------ */
+/* 1️⃣  Types                                                          */
+/* ------------------------------------------------------------------ */
 type CarDoc = {
   id: string
   make: string
@@ -21,16 +24,17 @@ type CarDoc = {
   description?: string
   features?: { feature: string }[]
   images?: { image?: { url: string; alt?: string } }[]
-  /* add other optional fields here */
 }
 
-type Props = {
-  params: { id: string } // 🔸 still `[id]`; change to { slug: string } if you rename folder
-}
+/**
+ * Props must extend Next.js PageProps.
+ * PageProps<Params, SearchParams>
+ */
+type Props = PageProps<{ id: string }>
 
-/** -----------------------------------------------------------------
- * 2️⃣  Optional – generate SEO metadata for the route
- * ---------------------------------------------------------------- */
+/* ------------------------------------------------------------------ */
+/* 2️⃣  SEO metadata                                                   */
+/* ------------------------------------------------------------------ */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const payload = await getPayload({ config })
 
@@ -38,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .findByID<CarDoc>({
       collection: 'cars',
       id: params.id,
-      depth: 0, // cheaper – don’t need images here
+      depth: 0, // no images needed for meta
     })
     .catch(() => null)
 
@@ -62,17 +66,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-/** -----------------------------------------------------------------
- * 3️⃣  Page component
- * ---------------------------------------------------------------- */
+/* ------------------------------------------------------------------ */
+/* 3️⃣  Page component                                                 */
+/* ------------------------------------------------------------------ */
 export default async function VehicleDetails({ params }: Props) {
   const payload = await getPayload({ config })
 
   const car = await payload
     .findByID<CarDoc>({
       collection: 'cars',
-      id: params.id, // 🔸 or params.slug if you switch to slugs
-      depth: 2, // populate upload relations in images[]
+      id: params.id,
+      depth: 2, // include upload relations
     })
     .catch(() => null)
 
@@ -83,7 +87,7 @@ export default async function VehicleDetails({ params }: Props) {
 
   return (
     <article className="vehicle-page">
-      {/* ---------- Hero section ------------------------------------------------ */}
+      {/* ── Hero ─────────────────────────────────────────────── */}
       <header className="vehicle-hero">
         <div className="hero-text">
           <h1 className="vehicle-title">
@@ -108,7 +112,7 @@ export default async function VehicleDetails({ params }: Props) {
         )}
       </header>
 
-      {/* ---------- Thumbnail gallery ----------------------------------------- */}
+      {/* ── Thumbnails ──────────────────────────────────────── */}
       {thumbnails && thumbnails.length > 0 && (
         <section className="thumb-gallery">
           {thumbnails.map((img, i) => (
@@ -124,7 +128,7 @@ export default async function VehicleDetails({ params }: Props) {
         </section>
       )}
 
-      {/* ---------- Specs ------------------------------------------------------ */}
+      {/* ── Specs ───────────────────────────────────────────── */}
       <section className="vehicle-specs">
         <h2>Specifications</h2>
         <ul>
@@ -143,11 +147,10 @@ export default async function VehicleDetails({ params }: Props) {
               <span>Fuel Type:</span> {car.fuelType}
             </li>
           )}
-          {/* add more spec list items if you introduce new fields */}
         </ul>
       </section>
 
-      {/* ---------- Description ---------------------------------------------- */}
+      {/* ── Description ─────────────────────────────────────── */}
       {car.description && (
         <section className="vehicle-description">
           <h2>About this vehicle</h2>
@@ -155,7 +158,7 @@ export default async function VehicleDetails({ params }: Props) {
         </section>
       )}
 
-      {/* ---------- Features list -------------------------------------------- */}
+      {/* ── Features ───────────────────────────────────────── */}
       {car.features && car.features.length > 0 && (
         <section className="vehicle-features">
           <h2>Key Features</h2>
@@ -167,7 +170,7 @@ export default async function VehicleDetails({ params }: Props) {
         </section>
       )}
 
-      {/* ---------- CTA -------------------------------------------------------- */}
+      {/* ── CTA ─────────────────────────────────────────────── */}
       <section className="vehicle-cta">
         <Link href="/contact" className="btn-primary">
           Schedule Test Drive
