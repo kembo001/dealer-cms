@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import config from '@/payload.config'
 import './inventory.css' // one level up from /inventory
+import Link from 'next/link'
 
 /**
  * Optional: If you want to support URL search params
@@ -171,9 +172,9 @@ export default async function InventoryPage({ searchParams }: { searchParams?: S
                   </div>
 
                   {/* Link to dynamic detail page */}
-                  <a href={`/inventory/${car.slug || car.id}`} className="car-cta">
+                  <Link href={`/inventory/${car.slug || car.id}`} className="car-cta">
                     View Details
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))

@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import config from '@/payload.config'
 import './styles.css'
+import Link from 'next/link'
 
 export default async function HomePage() {
   const headers = await getHeaders()
@@ -46,9 +47,9 @@ export default async function HomePage() {
               Discover your dream car at unbeatable prices here, at Shoreline Motors
             </p>
             <div className="hero-buttons">
-              <a href="/inventory" className="btn-primary">
+              <Link href="/inventory" className="btn-primary">
                 Browse Inventory
-              </a>
+              </Link>
               <a className="btn-outline">Schedule Test Drive</a>
             </div>
           </div>
